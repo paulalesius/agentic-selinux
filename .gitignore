@@ -1,0 +1,19 @@
+# SELinux policy build artifacts
+*.pp
+*.mod
+*.mod.fc
+tmp/
+fedora/tmp/
+
+# Generated files from sepolicy generate
+agent.sh
+agent_selinux.spec
+*_selinux.spec
+
+# Compiled policy packages
+*.pp
+
+# Backup / editor files
+*~
+*.swp
+*.swo

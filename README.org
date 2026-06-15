@@ -1,0 +1,32 @@
+
+# Reuired system setup
+
+## Create the agent user
+sudo useradd -m -s /bin/bash agent
+sudo passwd agent
+sudo usermod -aG wheel agent
+
+## Create a custom agent_u based on staff_r that already has config for sudo and admin tasks
+sudo semanage user -a -R "staff_r" -r s0-s0:c0.c1023 agent_u
+sudo semanage login -a -s agent_u -r s0 agent
+
+## Allow the SELinux role and type to sudo without password
+echo 'agent ALL=(ALL) TYPE=agent_t ROLE=staff_r ALL' > /etc/sudoers.d/agent
+
+## Compile the module
+cd fedora
+sudo semodule -i agent.pp
+make -f /usr/share/selinux/devel/Makefile
+semanage login -l | grep agent
+
+
+# Working with policy
+
+## Create policy
+sepolicy generate --confined_admin -n agent
+
+## Find denials
+sudo ausearch --start recent --message AVC
+sudo ausearch -m avc -ts recent | audit2allow -R
+sudo ausearch -m avc --start $(date +%H:%M -d '5 minutes ago') | audit2allow -R
+

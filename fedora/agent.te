@@ -1,0 +1,59 @@
+policy_module(agent, 1.0)
+
+gen_require(`
+    role staff_r;
+    type var_t;
+    type etc_t;
+    attribute file_type;
+    type var_log_t;
+    type staff_sudo_t;
+')
+
+type agent_t;
+type agent_exec_t;
+
+role staff_r types agent_t;
+
+domain_type(agent_t)
+domain_entry_file(agent_t, agent_exec_t)
+
+# Allow sudo transition
+allow staff_sudo_t agent_t:process transition;
+allow staff_sudo_t agent_t:key create;
+
+########################################
+#
+# Read permissions (diagnostics)
+#
+domain_use_interactive_fds(agent_t)
+files_read_etc_files(agent_t)
+miscfiles_read_localization(agent_t)
+
+kernel_read_system_state(agent_t)
+sysnet_read_config(agent_t)
+dev_read_sysfs(agent_t)
+
+logging_read_all_logs(agent_t)
+logging_send_syslog_msg(agent_t)
+
+# Basic execution needed for sudo + common tools
+corecmd_exec_bin(agent_t)
+corecmd_mmap_bin_files(agent_t)
+corecmd_shell_entry_type(agent_t)
+userdom_use_inherited_user_ptys(agent_t)
+
+allow agent_t self:capability { dac_read_search sys_ptrace sys_admin net_admin };
+allow agent_t self:process { getattr getsched getpgid };
+
+selinux_get_enforce_mode(agent_t)
+seutil_search_default_contexts(agent_t)
+
+########################################
+#
+# Strong read-only restrictions (no writes/changes)
+#
+dontaudit agent_t file_type:dir { write create unlink };
+dontaudit agent_t file_type:file { write create setattr unlink append };
+dontaudit agent_t etc_t:file { write create setattr };
+dontaudit agent_t var_t:dir { write create };
+dontaudit agent_t var_log_t:file { write append };
