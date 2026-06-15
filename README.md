@@ -14,31 +14,21 @@ You can enable additional capabilities using booleans. All booleans are **off by
 
 ### Available booleans
 
-| Boolean                | Default | Description                                      |
-|------------------------|---------|--------------------------------------------------|
-| `agent_use_systemctl`  | false   | Allow running `systemctl` and interacting with systemd |
+| Boolean                  | Default | Description                                           |
+|--------------------------|---------|-------------------------------------------------------|
+| `agent_manage_systemd`   | false   | Allow managing systemd units (start, stop, reload)    |
 
 ### Usage
 
 ```bash
 # Enable persistently
-sudo setsebool -P agent_use_systemctl on
+sudo setsebool -P agent_manage_systemd on
 
 # Check current value
-getsebool agent_use_systemctl
+getsebool agent_manage_systemd
 
 # Disable
-sudo setsebool -P agent_use_systemctl off
-```
-
-### Adding new booleans
-
-Edit `fedora/agent.te`, define a new boolean with `gen_bool()`, wrap the rules inside `tunable_policy()`, then rebuild and reload:
-
-```bash
-make -f /usr/share/selinux/devel/Makefile
-sudo semodule -i agent.pp
-```
+sudo setsebool -P agent_manage_systemd off
 
 ## Quick Start
 
@@ -95,6 +85,7 @@ sudo semodule -i agent.pp
 
 ## Notes
 
+- This policy is currently developed and tested on **Fedora**. Contributions for other distributions (RHEL, Rocky Linux, AlmaLinux, Gentoo, etc.) are very welcome.
 - Always test in **permissive** mode first (`setenforce 0`).
 - Re-login as the `agent` user after changing SELinux mappings.
 - The policy is intentionally **read-heavy** by default.

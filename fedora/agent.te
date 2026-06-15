@@ -26,9 +26,9 @@ allow staff_sudo_t agent_t:key create;
 # Booleans
 #
 
-gen_bool(agent_use_systemctl, false)
+gen_bool(agent_manage_systemd, false)
 
-tunable_policy(`agent_use_systemctl',`
+tunable_policy(`agent_manage_systemd',`
     systemd_exec_systemctl(agent_t)
     init_read_state(agent_t)
     init_stream_connectto(agent_t)
