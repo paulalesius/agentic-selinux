@@ -1,6 +1,6 @@
 # agentic-selinux
 
-![Example](example.jpg)
+![Example](example.png)
 
 ## Mission
 
