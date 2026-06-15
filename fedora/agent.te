@@ -7,6 +7,7 @@ gen_require(`
     attribute file_type;
     type var_log_t;
     type staff_sudo_t;
+    type systemd_systemctl_exec_t;
 ')
 
 type agent_t;
@@ -20,6 +21,22 @@ domain_entry_file(agent_t, agent_exec_t)
 # Allow sudo transition
 allow staff_sudo_t agent_t:process transition;
 allow staff_sudo_t agent_t:key create;
+
+########################################
+# Booleans
+#
+
+gen_bool(agent_use_systemctl, false)
+
+tunable_policy(`agent_use_systemctl',`
+    systemd_exec_systemctl(agent_t)
+    init_read_state(agent_t)
+    init_stream_connectto(agent_t)
+    init_write_pid_socket(agent_t)
+    kernel_read_fs_sysctls(agent_t)
+    term_search_ptys(agent_t)
+    userdom_use_user_ptys(agent_t)
+')
 
 ########################################
 #
