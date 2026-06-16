@@ -6,7 +6,7 @@
 
 Provides a confined SELinux domain for AI agents.
 
-By default, the agent has **broad read and inspection access** (including via sudo) while **all modifications are blocked**. Specific capabilities can be enabled through booleans when required.
+By default, the agent has **broad read and inspection access** (including via sudo) while **all modifications will be blocked**. Specific capabilities can be enabled through booleans when required.
 
 ## Booleans
 
@@ -29,6 +29,7 @@ getsebool agent_manage_systemd
 
 # Disable
 sudo setsebool -P agent_manage_systemd off
+```
 
 ## Quick Start
 
@@ -86,7 +87,6 @@ sudo semodule -i agent.pp
 ## Notes
 
 - This policy is currently developed and tested on **Fedora**. Contributions for other distributions (RHEL, Rocky Linux, AlmaLinux, Gentoo, etc.) are very welcome.
-- Always test in **permissive** mode first (`setenforce 0`).
 - Re-login as the `agent` user after changing SELinux mappings.
 - The policy is intentionally **read-heavy** by default.
 
