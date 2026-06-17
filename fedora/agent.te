@@ -91,7 +91,7 @@ allow agent_t self:process setpgid;
 
 # Allow getattr on files and directories inside other users' homes (needed for ls -l)
 allow agent_t user_home_t:dir getattr;
-allow agent_t user_home_t:file getattr;
+allow agent_t user_home_t:file { getattr read open };
 
 # Special content directories (Desktop, Downloads, etc. often have their own types)
 allow agent_t audio_home_t:dir getattr;
