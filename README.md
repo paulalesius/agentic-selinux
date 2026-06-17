@@ -64,17 +64,12 @@ sudo semodule -i agent.pp
 
 ## Working with the Policy
 
-### Generate a new policy template
-
-```bash
-sepolicy generate --confined_admin -n agent
-```
-
 ### Find and analyze denials
 
 ```bash
 sudo ausearch -m avc -ts recent | audit2allow -R
 sudo ausearch -m avc --start $(date +%H:%M -d '5 minutes ago') | audit2allow -R
+sudo ausearch -m avc,user_avc -ts recent --raw | audit2allow -m mylocal
 ```
 
 ### Rebuild and reload after editing

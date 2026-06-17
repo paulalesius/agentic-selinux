@@ -8,6 +8,12 @@ gen_require(`
     type var_log_t;
     type staff_sudo_t;
     type systemd_systemctl_exec_t;
+
+    # Added for the recent denials
+    type passwd_file_t;
+    type su_exec_t;
+    type systemd_userdbd_runtime_t;
+    type user_home_dir_t;
 ')
 
 type agent_t;
@@ -65,12 +71,29 @@ allow agent_t self:process { getattr getsched getpgid };
 selinux_get_enforce_mode(agent_t)
 seutil_search_default_contexts(agent_t)
 
+# Read /etc/passwd and related files
+allow agent_t passwd_file_t:file read;
+
+# Needed for sudo and user switching
+allow agent_t su_exec_t:file execute;
+
+# systemd user database lookup (very common on modern Fedora)
+allow agent_t systemd_userdbd_runtime_t:dir read;
+
+# Basic access to other users' home directories (getattr + search)
+allow agent_t user_home_dir_t:dir { getattr search read open };
+
+# Self permissions that appeared in denials
+allow agent_t self:netlink_audit_socket create;
+allow agent_t self:process setpgid;
+
 ########################################
 #
-# Strong read-only restrictions (no writes/changes)
+# Don't log denials for writing
 #
 dontaudit agent_t file_type:dir { write create unlink };
 dontaudit agent_t file_type:file { write create setattr unlink append };
 dontaudit agent_t etc_t:file { write create setattr };
 dontaudit agent_t var_t:dir { write create };
 dontaudit agent_t var_log_t:file { write append };
+dontaudit agent_t self:capability dac_override;
